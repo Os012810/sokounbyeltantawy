@@ -1,24 +1,20 @@
 {
-  "name": "Soukoun",
+  "name": "Soukoun Premium | سكينة",
   "short_name": "سكينة",
   "description": "منصة التلاوات الخاشعة الممتازة",
-  "start_url": "./",
-  "display": "fullscreen",
+  "start_url": "./index.html",
+  "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
-  "theme_color": "#10b981",
+  "theme_color": "#14b88a",
+  "lang": "ar",
+  "dir": "rtl",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2907/2907240.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/2907/2907240.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
