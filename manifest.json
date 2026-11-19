@@ -1,9 +1,8 @@
-
 {
   "name": "Soukoun Premium | سكينة",
   "short_name": "سكينة",
   "description": "منصة التلاوات الخاشعة الممتازة",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
@@ -12,7 +11,7 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "./icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
