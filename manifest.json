@@ -1,3 +1,4 @@
+
 {
   "name": "Soukoun Premium | سكينة",
   "short_name": "سكينة",
@@ -6,12 +7,12 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
-  "theme_color": "#14b88a",
+  "theme_color": "#000000",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
