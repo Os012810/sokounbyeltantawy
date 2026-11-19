@@ -1,4 +1,4 @@
-const CACHE_NAME = 'soukoun-cache-v1';
+const CACHE_NAME = 'soukoun-cache-v2';
 const assets = ['index.html', 'manifest.json', 'logo.png'];
 
 self.addEventListener('install', (e) => {
