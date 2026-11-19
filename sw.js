@@ -1,5 +1,3 @@
-const CACHE_NAME = 'soukoun-v1';
-
 self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
@@ -9,10 +7,7 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
-  );
+  // كود فارغ عشان نمنع أي أخطاء تمنع التثبيت
 });
+    
 
