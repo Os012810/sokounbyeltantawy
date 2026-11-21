@@ -186,7 +186,7 @@ body{background:var(--bg-base);color:var(--text-primary);min-height:100vh;displa
 <button class="tab-item-button tab-active" onclick="filterByCat('all', this)"><i class="fa-solid fa-compass"></i><span>الكل</span></button>
 <button class="tab-item-button" onclick="filterByCat('haram', this)"><i class="fa-solid fa-kaaba"></i><span>الحرم</span></button>
 <button class="tab-item-button" onclick="filterByCat('famous', this)"><i class="fa-solid fa-star"></i><span>المشاهير</span></button>
-<button class="tab-item-button" onclick="openQuranPage(this)"><i class="fa-solid fa-book-quran"></i><span>المصحف</span></button>
+<button class="tab-item-button" onclick="openQuranTab(this)"><i class="fa-solid fa-book-quran"></i><span>المصحف</span></button>
 <button class="tab-item-button" onclick="filterByCat('translation', this)"><i class="fa-solid fa-language"></i><span>تراجم</span></button>
 <button class="tab-item-button" onclick="filterByCat('tafseer', this)"><i class="fa-solid fa-book-open"></i><span>دروس</span></button>
 </div>
@@ -195,7 +195,6 @@ body{background:var(--bg-base);color:var(--text-primary);min-height:100vh;displa
 <audio id="audioPlaybackCore" crossorigin="anonymous"></audio>
 
 <script>
-// إخفاء شاشة البداية فوراً
 window.addEventListener('load', function() {
     var splash = document.getElementById('appSplashScreen');
     if (splash) { splash.style.display = 'none'; }
@@ -215,7 +214,7 @@ var recitersDataset=[
 {id:8,name:"عبد الباسط عبد الصمد",cat:"famous",desc:"مدرسة التلاوة",img:"basit.jpg",icon:"fa-solid fa-microphone-lines",server:"https://server7.mp3quran.net/basit/"},
 {id:9,name:"محمود الحصري",cat:"famous",desc:"شيخ المقارئ",img:"husary.jpg",icon:"fa-solid fa-award",server:"https://server13.mp3quran.net/husr/"},
 {id:10,name:"خالد الجليل",cat:"famous",desc:"تلاوات مؤثرة",img:"jalil.jpg",icon:"fa-solid fa-shield-halved",server:"https://server10.mp3quran.net/jleel/"},
-    {id:11,name:"إدريس أبكر",cat:"famous",desc:"هدوء وسكينة",img:"abkar.jpg",icon:"fa-solid fa-spa",server:"https://server6.mp3quran.net/abkr/"},
+  {id:11,name:"إدريس أبكر",cat:"famous",desc:"هدوء وسكينة",img:"abkar.jpg",icon:"fa-solid fa-spa",server:"https://server6.mp3quran.net/abkr/"},
 {id:12,name:"أحمد العجمي",cat:"famous",desc:"خشوع الأداء",img:"ajmi.jpg",icon:"fa-solid fa-gem",server:"https://server10.mp3quran.net/ajm/"},
 {id:24,name:"سعد الغامدي",cat:"famous",desc:"صوت عذب",img:"ghamdi.jpg",icon:"fa-solid fa-star",server:"https://server7.mp3quran.net/s_gmd/"},
 {id:25,name:"فارس عباد",cat:"famous",desc:"أداء قوي",img:"abbad.jpg",icon:"fa-solid fa-bolt",server:"https://server8.mp3quran.net/frs_a/"},
@@ -312,10 +311,127 @@ navigateToPage('pageSurahs');
 }
 
 function openCurrentReciterSurahs(){
-if(activeReciterObject.isRadio)return;
+if(!activeReciterObject||activeReciterObject.isRadio)return;
 document.getElementById('surahPageTitle').innerText=activeReciterObject.name;
 buildSurahPlaylistRows();
 navigateToPage('pageSurahs');
+}
+
+function buildSurahPlaylistRows(){
+var target=document.getElementById('surahRowsTarget');
+if(!target)return;
+var html='';
+surahIndexMap.forEach(function(s,idx){
+var isCurrent=!activeReciterObject.isRadio&&idx===selectedSurahIndex&&mediaEngine.src.indexOf(activeReciterObject.server)===0;
+html+='<div class="row-surah-item '+(isCurrent?'active-playing':'')+'" onclick="playSurahTrack('+idx+')"><div class="surah-meta-right"><div class="txt-surah-idx">'+parseInt(s.id,10)+'</div><div class="txt-surah-title-ar">سورة '+s.ar+'</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="txt-surah-title-en">'+s.en+'</span><div class="eq-animation-container"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div></div>';
+});
+target.innerHTML=html;
+}
+
+function updateDeckAvatar(r){
+var av=document.getElementById('deckAvatarIcon');
+if(!av||!r)return;
+if(r.flag){av.innerHTML='<span style="font-size:20px;">'+r.flag+'</span>';}
+else if(r.img){av.innerHTML='<img src="'+r.img+'" alt="'+r.name+'" style="width:100%;height:100%;object-fit:cover;border-radius:9px;" onerror="this.outerHTML=\'<i class=&quot;'+r.icon+'&quot;></i>\'">';}
+else{av.innerHTML='<i class="'+r.icon+'"></i>';}
+}
+
+function playRadioDirectly(id){
+var r=recitersDataset.find(function(item){return item.id===id;});
+if(!r)return;
+activeReciterObject=r;
+isLoopActive=false;
+btnTrackLoop.classList.remove('loop-active');
+btnTrackLoop.style.display="none";
+btnNextTrack.style.display="none";
+deckTimelineWrapper.style.visibility="hidden";
+trackProgressLine.style.width="0%";
+document.getElementById('deckSurahTitle').innerText=r.name;
+document.getElementById('deckReciterName').innerText=r.desc||"بث مباشر";
+updateDeckAvatar(r);
+mediaEngine.loop=false;
+mediaEngine.src=r.server;
+mediaEngine.play().then(function(){deckPlayIcon.className='fa-solid fa-pause';}).catch(function(){deckPlayIcon.className='fa-solid fa-play';});
+}
+
+function playSurahTrack(idx){
+if(!activeReciterObject||activeReciterObject.isRadio)return;
+if(idx<0)idx=surahIndexMap.length-1;
+if(idx>=surahIndexMap.length)idx=0;
+selectedSurahIndex=idx;
+var s=surahIndexMap[idx];
+btnTrackLoop.style.display="flex";
+btnNextTrack.style.display="flex";
+deckTimelineWrapper.style.visibility="visible";
+document.getElementById('deckSurahTitle').innerText="سورة "+s.ar;
+document.getElementById('deckReciterName').innerText=activeReciterObject.name;
+updateDeckAvatar(activeReciterObject);
+mediaEngine.loop=isLoopActive;
+mediaEngine.src=activeReciterObject.server+s.id+".mp3";
+mediaEngine.play().then(function(){deckPlayIcon.className='fa-solid fa-pause';}).catch(function(){deckPlayIcon.className='fa-solid fa-play';});
+buildSurahPlaylistRows();
+}
+
+function handlePlayPauseClick(){
+if(!mediaEngine.src){
+if(activeReciterObject&&activeReciterObject.isRadio){playRadioDirectly(activeReciterObject.id);}
+else{playSurahTrack(selectedSurahIndex||0);}
+return;
+}
+if(mediaEngine.paused){
+mediaEngine.play().then(function(){deckPlayIcon.className='fa-solid fa-pause';}).catch(function(){});
+}else{
+mediaEngine.pause();
+deckPlayIcon.className='fa-solid fa-play';
+}
+}
+
+function triggerNextTrack(){
+if(!activeReciterObject||activeReciterObject.isRadio)return;
+playSurahTrack(selectedSurahIndex+1);
+}
+
+function toggleAudioLoop(){
+if(!activeReciterObject||activeReciterObject.isRadio)return;
+isLoopActive=!isLoopActive;
+mediaEngine.loop=isLoopActive;
+btnTrackLoop.classList.toggle('loop-active',isLoopActive);
+}
+
+mediaEngine.addEventListener('timeupdate',function(){
+if(activeReciterObject&&!activeReciterObject.isRadio&&mediaEngine.duration){
+var pct=(mediaEngine.currentTime/mediaEngine.duration)*100;
+trackProgressLine.style.width=(isFinite(pct)?pct:0)+"%";
+}
+});
+
+mediaEngine.addEventListener('ended',function(){
+if(!activeReciterObject||activeReciterObject.isRadio){deckPlayIcon.className='fa-solid fa-play';return;}
+if(!isLoopActive){triggerNextTrack();}
+});
+
+function openQuranTab(btn){
+document.querySelectorAll('.tab-item-button').forEach(function(b){b.classList.remove('tab-active');});
+if(btn)btn.classList.add('tab-active');
+navigateToPage('pageQuran');
+closeQuranReader();
+}
+
+function renderQuranSurahList(filterText){
+var listEl=document.getElementById('quranSurahList');
+if(!listEl)return;
+var q=(filterText||"").trim().toLowerCase();
+var html='';
+surahIndexMap.forEach(function(s,idx){
+if(q&&s.ar.toLowerCase().indexOf(q)===-1&&s.en.toLowerCase().indexOf(q)===-1&&String(idx+1)!==q)return;
+html+='<div class="row-surah-item" onclick="loadQuranSurah('+(idx+1)+')"><div class="surah-meta-right"><div class="txt-surah-idx">'+(idx+1)+'</div><div class="txt-surah-title-ar">سورة '+s.ar+'</div></div><span class="txt-surah-title-en">'+s.en+'</span></div>';
+});
+listEl.innerHTML=html||'<div class="loading-box">لا توجد سورة مطابقة</div>';
+}
+
+function filterQuranSurahList(){
+var val=document.getElementById('quranSearchField').value;
+renderQuranSurahList(val);
 }
 
 async function loadQuranSurah(num){
@@ -390,6 +506,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 </script>
 </body>
 </html>
+
 
 
 
