@@ -26,6 +26,11 @@
     -webkit-tap-highlight-color: transparent;
     font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif;
 }
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
 body {
     background: var(--bg-base);
     background-image:
@@ -37,13 +42,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
 }
 .phone-wrapper {
     width: 100%;
     max-width: 480px;
     padding: 20px 16px 160px 16px;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 .apple-header {
     display: flex;
@@ -63,6 +68,7 @@ body {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+    width: 100%;
 }
 .reciter-card {
     min-width: 0;
@@ -135,6 +141,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
 }
 .radio-text .reciter-name {
     color: var(--accent);
@@ -154,8 +161,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 .surah-item {
+    width: 100%;
+    min-width: 0;
     background: var(--card-bg);
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
@@ -175,10 +185,12 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 .surah-num {
     width: 32px;
     height: 32px;
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 10px;
     display: flex;
@@ -195,10 +207,12 @@ body {
 .surah-name {
     font-size: 16px;
     font-weight: 700;
+    white-space: nowrap;
 }
 .surah-translated {
     font-size: 12px;
     color: var(--text-secondary);
+    white-space: nowrap;
 }
 
 /* صفحة القراءة */
@@ -206,6 +220,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 100%;
 }
 .reader-header {
     text-align: center;
@@ -228,6 +243,7 @@ body {
     padding: 24px 20px;
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
+    word-wrap: break-word;
 }
 .ayah-marker {
     display: inline-flex;
@@ -456,10 +472,8 @@ const surahList = [
 ];
 
 const reciters = [
-    // الإذاعات
     { name: "إذاعة القرآن الكريم", img: "radio.jpg", server: "https://qurango.net/radio/tarateel", role: "بث مباشر", isRadio: true },
     { name: "إذاعة ياسر الدوسري", img: "yasser.jpg", server: "https://qurango.net/radio/yasser", role: "بث مباشر", isRadio: true },
-    // القراء
     { name: "ياسر الدوسري", img: "yasser.jpg", server: "https://server11.mp3quran.net/yasser/", role: "إمام الحرم" },
     { name: "ماهر المعيقلي", img: "maher.jpg", server: "https://server12.mp3quran.net/maher/", role: "إمام الحرم" },
     { name: "عبد الرحمن السديس", img: "sudais.jpg", server: "https://server11.mp3quran.net/sds/", role: "إمام الحرم" },
@@ -543,17 +557,14 @@ function openSurahs(index) {
     surahList.forEach((s, idx) => {
         const activeClass = (!isRadioMode && idx === currentSurahIndex && audio.src) ? 'active' : '';
         html += `
-            <div class="surah-item ${activeClass}" id="surah-item-${idx}" onclick="playSurah(${idx})">
-                <div class="surah-info">
-                    <div class="surah-num">${parseInt(s.id)}</div>
-                    <div class="surah-name">${s.name}</div>
-      
+                        </div>
                 <div class="surah-translated">${s.en}</div>
             </div>
         `;
     });
     document.getElementById('surahListContainer').innerHTML = html;
     goBack('surahsPage');
+    window.scrollTo(0, 0);
 }
 
 function playRadio(index) {
@@ -666,3 +677,4 @@ renderReciters();
 </script>
 </body>
 </html>
+
