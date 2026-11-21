@@ -177,6 +177,7 @@ body {
     align-items: center;
     cursor: pointer;
     transition: background 0.2s;
+    color: var(--text-primary);
 }
 .surah-item:active {
     background: rgba(255, 255, 255, 0.12);
@@ -207,6 +208,7 @@ body {
 .surah-name {
     font-size: 16px;
     font-weight: 700;
+    color: var(--text-primary);
     white-space: nowrap;
 }
 .surah-translated {
@@ -470,7 +472,7 @@ const surahList = [
     {id:"111", name:"المسد", en:"Al-Masad"}, {id:"112", name:"الإخلاص", en:"Al-Ikhlas"},
     {id:"113", name:"الفلق", en:"Al-Falaq"}, {id:"114", name:"الناس", en:"An-Nas"}
 ];
-
+    
 const reciters = [
     { name: "إذاعة القرآن الكريم", img: "radio.jpg", server: "https://qurango.net/radio/tarateel", role: "بث مباشر", isRadio: true },
     { name: "إذاعة ياسر الدوسري", img: "yasser.jpg", server: "https://qurango.net/radio/yasser", role: "بث مباشر", isRadio: true },
@@ -557,7 +559,11 @@ function openSurahs(index) {
     surahList.forEach((s, idx) => {
         const activeClass = (!isRadioMode && idx === currentSurahIndex && audio.src) ? 'active' : '';
         html += `
-                        </div>
+            <div class="surah-item ${activeClass}" id="surah-item-${idx}" onclick="playSurah(${idx})">
+                <div class="surah-info">
+                    <div class="surah-num">${parseInt(s.id)}</div>
+                    <div class="surah-name">${s.name}</div>
+                </div>
                 <div class="surah-translated">${s.en}</div>
             </div>
         `;
