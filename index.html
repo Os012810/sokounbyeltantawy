@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>سَكينة | Soukoun</title>
+<title>Soukoun | سكينة</title>
 <meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,8 +32,10 @@ body {
     overflow-x: hidden;
 }
 .phone-wrapper { width: 100%; max-width: 480px; padding: 20px 16px 160px 16px; min-height: 100vh; }
-.apple-header { display: flex; justify-content: center; align-items: center; padding: 10px 0 20px 0; }
-.apple-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.apple-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; }
+.apple-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* شبكة الشيوخ */
 .reciters-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .reciter-card {
     background: var(--card-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
@@ -43,8 +45,10 @@ body {
 }
 .reciter-card:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.1); }
 .reciter-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-.reciter-name { font-size: 15px; font-weight: 700; }
+.reciter-name { font-size: 15px; font-weight: 700; text-align: center; }
 .reciter-role { font-size: 12px; color: var(--text-secondary); }
+
+/* شاشة السور */
 .surah-list { display: flex; flex-direction: column; gap: 10px; }
 .surah-item {
     background: var(--card-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
@@ -84,6 +88,7 @@ body {
 .reader-ayahs {
     font-family: 'Amiri Quran', serif; font-size: 24px; line-height: 2.2; text-align: justify; direction: rtl;
     background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 24px 20px;
+    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
 }
 .ayah-marker {
     display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px;
@@ -92,13 +97,31 @@ body {
 }
 .apple-back-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--glass-border); color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; margin-bottom: 16px; }
 .hidden { display: none !important; }
+
+/* بطاقة الإذاعات */
+.radio-card {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(29, 185, 84, 0.3);
+    grid-column: span 2;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    padding: 16px 20px;
+}
+.radio-card .reciter-img { width: 50px; height: 50px; }
+.radio-text { display: flex; flex-direction: column; gap: 4px; }
+.radio-text .reciter-name { color: var(--accent); font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.radio-text .reciter-role { font-size: 12px; color: #fff; opacity: 0.8; }
 </style>
 </head>
 <body>
 
 <div class="phone-wrapper">
     <div id="homePage">
-        <div class="apple-header"><h1 class="apple-title">استكشف</h1></div>
+        <div class="apple-header">
+            <h1 class="apple-title">Soukoun</h1>
+        </div>
         <div class="reciters-grid" id="recitersGrid"></div>
     </div>
 
@@ -112,7 +135,9 @@ body {
 
     <div id="quranPage" class="hidden quran-reader">
         <button class="apple-back-btn" onclick="goBack('surahsPage')"><i class="fa-solid fa-chevron-right"></i></button>
-        <div class="reader-header"><h1 class="reader-title" id="quranTitle">الفاتحة</h1></div>
+        <div class="reader-header">
+            <h1 class="reader-title" id="quranTitle">الفاتحة</h1>
+        </div>
         <div class="reader-ayahs" id="quranTextContainer"></div>
     </div>
 </div>
@@ -135,7 +160,6 @@ body {
 <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
 <script>
-// بيانات السور
 const surahList = [
     {id:"001", name:"الفاتحة", en:"Al-Fatihah"}, {id:"002", name:"البقرة", en:"Al-Baqarah"},
     {id:"003", name:"آل عمران", en:"Ali 'Imran"}, {id:"004", name:"النساء", en:"An-Nisa'"},
@@ -196,8 +220,11 @@ const surahList = [
     {id:"113", name:"الفلق", en:"Al-Falaq"}, {id:"114", name:"الناس", en:"An-Nas"}
 ];
 
-// قائمة الشيوخ (أسماء الصور بدون مجلد images لأنك رفعتهم في الصفحة الرئيسية)
 const reciters = [
+    // الإذاعات
+    { name: "إذاعة القرآن الكريم", img: "radio.jpg", server: "https://qurango.net/radio/tarateel", role: "بث مباشر", isRadio: true },
+    { name: "إذاعة ياسر الدوسري", img: "yasser.jpg", server: "https://qurango.net/radio/yasser", role: "بث مباشر", isRadio: true },
+    // القراء
     { name: "ياسر الدوسري", img: "yasser.jpg", server: "https://server11.mp3quran.net/yasser/", role: "إمام الحرم" },
     { name: "ماهر المعيقلي", img: "maher.jpg", server: "https://server12.mp3quran.net/maher/", role: "إمام الحرم" },
     { name: "عبد الرحمن السديس", img: "sudais.jpg", server: "https://server11.mp3quran.net/sds/", role: "إمام الحرم" },
@@ -220,8 +247,8 @@ const reciters = [
     { name: "هاني الرفاعي", img: "rifai.jpg", server: "https://server8.mp3quran.net/hani/", role: "قارئ" }
 ];
 
-let currentServer = reciters[0].server;
-let currentReciterName = reciters[0].name;
+let currentServer = reciters[2].server;
+let currentReciterName = reciters[2].name;
 let currentSurahIndex = 0;
 let isLoop = false;
 
@@ -232,13 +259,27 @@ function renderReciters() {
     const grid = document.getElementById('recitersGrid');
     let html = '';
     reciters.forEach((r, i) => {
-        html += `
-            <div class="reciter-card" onclick="openSurahs(${i})">
-                <img src="${r.img}" class="reciter-img" onerror="this.style.background='#333'; this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
-                <div class="reciter-name">${r.name}</div>
-                <div class="reciter-role">${r.role}</div>
-            </div>
-        `;
+        const imgHtml = `<img src="${r.img}" class="reciter-img" onerror="this.style.display='none'; this.parentElement.innerHTML += '<i class=\\'fa-solid fa-user\\' style=\\'font-size:40px; color:#666;\\'></i>'">`;
+        
+        if (r.isRadio) {
+            html += `
+                <div class="reciter-card radio-card" onclick="playRadio(${i})">
+                    <div class="radio-text">
+                        <div class="reciter-name"><i class="fa-solid fa-tower-broadcast"></i> ${r.name}</div>
+                        <div class="reciter-role">${r.role}</div>
+                    </div>
+                    ${imgHtml}
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="reciter-card" onclick="openSurahs(${i})">
+                    ${imgHtml}
+                    <div class="reciter-name">${r.name}</div>
+                    <div class="reciter-role">${r.role}</div>
+                </div>
+            `;
+        }
     });
     grid.innerHTML = html;
 }
@@ -269,13 +310,28 @@ function openSurahs(index) {
     goBack('surahsPage');
 }
 
+function playRadio(index) {
+    const r = reciters[index];
+    audio.src = r.server;
+    audio.loop = false;
+    isLoop = false;
+    document.getElementById('loopBtn').classList.remove('active');
+    
+    document.getElementById('playerTitle').innerText = r.name;
+    document.getElementById('playerArtist').innerText = "بث مباشر";
+    
+    audio.play().then(() => {
+        playIcon.className = 'fa-solid fa-pause';
+    }).catch(() => {});
+}
+
 function playSurah(idx) {
     currentSurahIndex = idx;
     const surah = surahList[idx];
     const audioUrl = currentServer + surah.id + ".mp3";
     
     audio.src = audioUrl;
-    audio.loop = isLoop; // تفعيل التكرار لو شغال
+    audio.loop = isLoop;
     
     document.getElementById('playerTitle').innerText = surah.name;
     document.getElementById('playerArtist').innerText = currentReciterName;
@@ -296,32 +352,34 @@ async function openQuranPage(surahId, surahName) {
     goBack('quranPage');
     document.getElementById('quranTitle').innerText = surahName;
     const container = document.getElementById('quranTextContainer');
-    container.innerHTML = '<div style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...</div>';
+    container.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...</div>';
 
     try {
+        
         const res = await fetch(`https://api.alquran.cloud/v1/surah/${parseInt(surahId)}/quran-uthmani`);
         const data = await res.json();
+        const ayahs = data.data.ayahs;
+
         let html = '';
-        
-        data.data.ayahs.forEach((ayah, i) => {
-            let text = ayah.text;
-            if (i === 0 && surahId !== "001" && surahId !== "009") {
-                text = text.replace(/^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/, '');
-            }
-            html += `<span>${text}<span class="ayah-marker">${ayah.numberInSurah}</span></span> `;
+        ayahs.forEach((ayah) => {
+            html += `${ayah.text} <span class="ayah-marker">${ayah.numberInSurah}</span>`;
         });
+
         container.innerHTML = html;
-        window.scrollTo(0,0);
-    } catch (e) {
-        container.innerHTML = '<div style="text-align:center; color:red;">حدث خطأ في تحميل الآيات.</div>';
+    } catch (error) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-secondary);">تعذر تحميل نص السورة</div>';
     }
 }
 
 function togglePlay() {
-    if (!audio.src) { playSurah(0); return; }
+    if (!audio.src) {
+        playSurah(0);
+        return;
+    }
     if (audio.paused) {
-        audio.play();
-        playIcon.className = 'fa-solid fa-pause';
+        audio.play().then(() => {
+            playIcon.className = 'fa-solid fa-pause';
+        }).catch(() => {});
     } else {
         audio.pause();
         playIcon.className = 'fa-solid fa-play';
@@ -329,23 +387,17 @@ function togglePlay() {
 }
 
 function nextTrack() {
-    let next = (currentSurahIndex + 1) % surahList.length;
-    playSurah(next);
+    const nextIdx = (currentSurahIndex + 1) % surahList.length;
+    playSurah(nextIdx);
 }
 
-// تفعيل التكرار
 function toggleLoop() {
     isLoop = !isLoop;
     audio.loop = isLoop;
-    const btn = document.getElementById('loopBtn');
-    if (isLoop) {
-        btn.classList.add('active');
-    } else {
-        btn.classList.remove('active');
-    }
+    document.getElementById('loopBtn').classList.toggle('active', isLoop);
 }
 
-audio.addEventListener('ended', function() {
+audio.addEventListener('ended', () => {
     if (!isLoop) {
         nextTrack();
     }
